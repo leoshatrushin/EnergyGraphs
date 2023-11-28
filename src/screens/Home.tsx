@@ -1,77 +1,26 @@
-import React, {
-    useEffect,
-    useCallback,
-    useContext,
-    useMemo,
-    useState,
-} from 'react';
-import {
-    Text,
-    LayoutChangeEvent,
-    StyleSheet,
-    View,
-    ViewStyle,
-    Pressable,
-} from 'react-native';
-import {AppContext} from '../App.provider';
-import {MainChart} from '../components/MainChart';
+import React, { useContext, useEffect, useMemo } from 'react';
+import { Text, StyleSheet, View, ViewStyle, Pressable } from 'react-native';
+import { AppContext } from '../App.provider';
+import { MainChart } from '../components/MainChart';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {Device} from 'react-native-ble-plx';
-import {disconnectDevice, scanDevices} from '../services/bluetooth';
-import {chartZoomOptions, chartZoomLabels} from '../constants';
+import { bleInit } from '../services/bluetooth';
 
 export const Home: React.FC = () => {
-    const {orientation, messages, setMessages} = useContext(AppContext);
-
-    const [isConnected, setIsConnected] = useState(false);
-    const [connectedDevice, setConnectedDevice] = useState<Device>();
-    const [message, setMessage] = useState(0);
-    const [boxvalue, setBoxValue] = useState(false);
+    const { orientation, setMessages } = useContext(AppContext);
 
     useEffect(() => {
-        if (!connectedDevice || !(connectedDevice.name === 'UART Service')) {
-            console.log('need to scan devices');
-            scanDevices(
-                setIsConnected,
-                setConnectedDevice,
-                setMessage,
-                setBoxValue,
-                messages,
-                setMessages,
-            );
-        } else {
-            console.log('already connected');
-            // console.log(messages);
-        }
-
-        return () => {
-            if (connectedDevice) {
-                disconnectDevice(connectedDevice, setIsConnected);
-            }
-        };
-    }, [connectedDevice, messages, setMessages]);
-
-    const [chartDim, setChartDim] = useState({width: 0, height: 0});
-    const [chartZoom, setChartDuration] = useState(chartZoomOptions.ONE_HOUR);
-
-    const onLayout = useCallback((event: LayoutChangeEvent) => {
-        const {width, height} = event.nativeEvent.layout;
-        setChartDim({width, height});
+        bleInit(setMessages);
     }, []);
 
     const flexOrientation = useMemo<ViewStyle>(() => {
         return orientation.includes('PORTRAIT') ? flexCol : flexRow;
     }, [orientation]);
 
-    const flexOppositeOrientation = useMemo<ViewStyle>(() => {
-        return orientation.includes('PORTRAIT') ? flexRow : flexCol;
-    }, [orientation]);
-
     return (
         <View style={[flexOrientation, styles.container]}>
             <View style={[styles.chartAreaContainer]}>
-                <View style={styles.chartContainer} onLayout={onLayout}>
+                <View style={styles.chartContainer}>
                     <MainChart />
                 </View>
                 <View style={[styles.chartOptionsContainer, flexOrientation]}>
@@ -80,19 +29,22 @@ export const Home: React.FC = () => {
                         name="zoom-in"
                         onPress={() => {}}
                         iconStyle={styles.reflectX}
-                        style={styles.chartOption}>
-                        {chartZoomLabels[chartZoom]}
+                        style={styles.chartOption}
+                    >
+                        tmp
                     </MaterialIcons.Button>
                     <MaterialIcons.Button
                         name="bar-chart"
                         onPress={() => {}}
-                        style={styles.chartOption}>
+                        style={styles.chartOption}
+                    >
                         <View
                             style={{
                                 flexDirection: 'column',
                                 alignItems: 'center',
-                            }}>
-                            <Text style={styles.numerator}>d</Text>
+                            }}
+                        >
+                            <Text style={styles.numerator}>c</Text>
                             <Text style={styles.denominator}>
                                 <Text>d</Text>
                                 <Text style={styles.italic}>x</Text>
@@ -102,7 +54,8 @@ export const Home: React.FC = () => {
                     <Entypo.Button
                         name="line-graph"
                         onPress={() => {}}
-                        style={styles.chartOption}>
+                        style={styles.chartOption}
+                    >
                         <Text>1x</Text>
                     </Entypo.Button>
                     <Pressable onPress={() => {}} style={styles.chartOption}>
@@ -145,7 +98,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     reflectX: {
-        transform: [{scaleX: -1}],
+        transform: [{ scaleX: -1 }],
     },
     numerator: {
         borderBottomWidth: 1,
