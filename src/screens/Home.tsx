@@ -19,9 +19,20 @@ export const Home: React.FC = () => {
 
     return (
         <View style={[flexOrientation, styles.container]}>
-            <View style={[styles.chartAreaContainer]}>
-                <View style={styles.chartContainer}>
-                    <MainChart />
+            <View style={[styles.chartSectionContainer]}>
+                <View style={styles.chartAreaContiner}>
+                    <View style={styles.yAxisLabelContainer}>
+                        <Text style={styles.yAxisLabel}>Watts</Text>
+                    </View>
+                    <View style={styles.chartContainer}>
+                        <MainChart />
+                    </View>
+                    <View style={styles.yAxisLabelContainer}>
+                        <Text style={styles.yAxisLabel}>Dollars per hour</Text>
+                    </View>
+                </View>
+                <View style={styles.xAxisLabelContainer}>
+                    <Text style={styles.xAxisLabel}>Seconds</Text>
                 </View>
                 <View style={[flexOrientation, styles.chartOptionsContainer]}>
                     <MaterialIcons name="zoom-in" />
@@ -76,18 +87,44 @@ export const Home: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'gray',
+        backgroundColor: 'black',
+        color: 'white',
     },
-    chartAreaContainer: {
+    chartSectionContainer: {
         flex: 4,
         flexDirection: 'column',
     },
-    chartContainer: {
     sidebarContainer: {
         flex: 1,
     },
-        flex: 14,
+    xAxisLabelContainer: {
+        height: 15,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
+    xAxisLabel: {
+        textAlign: 'center',
+        color: 'white',
+    },
+    chartAreaContiner: {
+        flex: 14,
+        flexDirection: 'row',
+    },
+    yAxisLabelContainer: {
+        width: 15,
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        transform: [{ rotate: '-90deg' }],
+    },
+    yAxisLabel: {
+        width: 100,
+        textAlign: 'center',
+        color: 'white',
+    },
+    chartContainer: {
+        flexGrow: 1,
     },
     text: {},
     chartOptionsContainer: {
