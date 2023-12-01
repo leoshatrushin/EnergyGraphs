@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { LineChart } from 'react-native-charts-wrapper';
 import { AppContext } from '../App.provider';
+import { processColor } from 'react-native';
 
 const CHANGE_ENERGY_VALUE = (1 * 3600 * 1000) / 2;
 
@@ -10,12 +11,16 @@ function convertMessagesToGradientPoints(
     if (messages.length < 2) {
         return [];
     }
-    let points = new Array(2 * messages.length - 2);
+    let points = new Array(messages.length - 1);
     let gradient;
+    let endTime = messages[messages.length - 2];
+    let startTime = endTime - 60000;
     for (let i = 1; i < messages.length; i++) {
         gradient = CHANGE_ENERGY_VALUE / (messages[i] - messages[i - 1]);
-        points[2 * i - 2] = {x: messages[i - 1] + 0.0001, y: gradient};
-        points[2 * i - 1] = {x: messages[i], y: gradient};
+        points[i - 1] = {
+            x: (messages[i - 1] - startTime) / 1000,
+            y: gradient,
+        };
     }
     return points;
 }
@@ -32,6 +37,15 @@ export const MainChart: React.FC = () => {
                     {
                         label: 'demo',
                         values: convertMessagesToGradientPoints(messages),
+                        config: {
+                            color: processColor('cyan'),
+                            mode: 'STEPPED',
+                            drawCircles: false,
+                            drawValues: false,
+                            fillColor: processColor('cyan'),
+                            fillAlpha: 0xa0,
+                            drawFilled: true,
+                        },
                     },
                 ],
             }}
