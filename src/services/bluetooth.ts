@@ -80,6 +80,7 @@ function connectDevice(device: Device, setMessages: any) {
             return device.discoverAllServicesAndCharacteristics();
         })
         .then((device) => {
+            console.log('connection successful');
             //  Set what to do when DC is detected
             BLTManager.onDeviceDisconnected(device.id, (error, device) => {});
 
