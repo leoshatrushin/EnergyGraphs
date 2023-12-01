@@ -55,6 +55,8 @@ export const MainChart: React.FC = () => {
             yAxis={{
                 left: {
                     axisMinimum: 0,
+                    axisMaximum: 8000,
+                    textColor: processColor('white'),
                 },
                 right: {
                     axisMinimum: 0,
