@@ -1,12 +1,12 @@
-import React, {useContext} from 'react';
-import {LineChart} from 'react-native-charts-wrapper';
-import {AppContext} from '../App.provider';
+import React, { useContext } from 'react';
+import { LineChart } from 'react-native-charts-wrapper';
+import { AppContext } from '../App.provider';
 
 const CHANGE_ENERGY_VALUE = (1 * 3600 * 1000) / 2;
 
 function convertMessagesToGradientPoints(
     messages: number[],
-): {x: number; y: number}[] {
+): { x: number; y: number }[] {
     if (messages.length < 2) {
         return [];
     }
@@ -22,11 +22,11 @@ function convertMessagesToGradientPoints(
 
 export const MainChart: React.FC = () => {
     const appContext = useContext(AppContext);
-    const messages = appContext.messages;
+    const { messages } = appContext;
 
     return (
         <LineChart
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             data={{
                 dataSets: [
                     {

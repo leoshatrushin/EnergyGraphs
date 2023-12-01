@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useMemo } from 'react';
 import { Text, StyleSheet, View, ViewStyle, Pressable } from 'react-native';
-import { AppContext } from '../App.provider';
+import { AppContextType, AppContext } from '../App.provider';
 import { MainChart } from '../components/MainChart';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { bleInit } from '../services/bluetooth';
 
 export const Home: React.FC = () => {
-    const { orientation, setMessages } = useContext(AppContext);
+    const { orientation, setMessages } = useContext<AppContextType>(AppContext);
 
     useEffect(() => {
         bleInit(setMessages);
@@ -23,7 +23,7 @@ export const Home: React.FC = () => {
                 <View style={styles.chartContainer}>
                     <MainChart />
                 </View>
-                <View style={[styles.chartOptionsContainer, flexOrientation]}>
+                <View style={[flexOrientation, styles.chartOptionsContainer]}>
                     <MaterialIcons name="zoom-in" />
                     <MaterialIcons.Button
                         name="zoom-in"
@@ -66,7 +66,9 @@ export const Home: React.FC = () => {
                     </Pressable>
                 </View>
             </View>
-            <Text style={styles.text}>Hello {orientation}</Text>
+            <View style={styles.sidebarContainer}>
+                <Text style={styles.text}>Hello {orientation}</Text>
+            </View>
         </View>
     );
 };
@@ -78,22 +80,21 @@ const styles = StyleSheet.create({
     },
     chartAreaContainer: {
         flex: 4,
-        display: 'flex',
         flexDirection: 'column',
     },
     chartContainer: {
+    sidebarContainer: {
+        flex: 1,
+    },
         flex: 14,
     },
-    text: {
-        flex: 1,
     },
+    text: {},
     chartOptionsContainer: {
         flex: 1,
-        display: 'flex',
     },
     chartOption: {
         flex: 1,
-        display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -103,7 +104,6 @@ const styles = StyleSheet.create({
     numerator: {
         borderBottomWidth: 1,
         borderBottomColor: 'black',
-        display: 'flex',
     },
     denominator: {},
     italic: {
