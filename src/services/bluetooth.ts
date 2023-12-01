@@ -95,7 +95,20 @@ function connectDevice(device: Device, setMessages: any) {
                             'base64',
                         ).readInt32LE(0);
 
-                        setMessages((messages: any) => [...messages, message]);
+                        setMessages((messages: any) => {
+                            let endTime = messages[messages.length - 1];
+                            let startTime = endTime - 60000;
+                            for (let i = 0; i < messages.length - 1; i++) {
+                                if (
+                                    messages[i] < startTime &&
+                                    messages[i + 1] > startTime
+                                ) {
+                                    messages.slice(i);
+                                    break;
+                                }
+                            }
+                            return [...messages, message];
+                        });
                     }
                 },
             );

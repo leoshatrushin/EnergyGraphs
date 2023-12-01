@@ -56,6 +56,20 @@ export const MainChart: React.FC = () => {
                 left: {
                     axisMinimum: 0,
                 },
+                right: {
+                    axisMinimum: 0,
+                    axisMaximum: 8000,
+                    textColor: processColor('white'),
+                },
+            }}
+            xAxis={{
+                axisMinimum: 0,
+                axisMaximum: 60,
+                textColor: processColor('white'),
+                position: 'BOTTOM',
+            }}
+            chartDescription={{
+                text: '',
             }}
         />
     );
