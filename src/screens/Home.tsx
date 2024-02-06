@@ -4,14 +4,40 @@ import { AppContextType, AppContext } from '../App.provider';
 import { MainChart } from '../components/MainChart';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { bleInit } from '../services/bluetooth';
+// import { bleInit } from '../services/bluetooth';
+// import '../services/websocket';
+
+function connectToWebSocket() {
+    const webSocket = new WebSocket('ws://192.168.0.136:80/ws');
+
+    webSocket.onopen = () => {
+        console.log('Connection opened!');
+        webSocket.send('Hello Server!');
+        webSocket.send('Hello Server2!');
+    };
+
+    // Listen for messages
+    webSocket.onmessage = event => {
+        console.log('Message from server ', event.data);
+    };
+
+    // Listen for possible errors
+    webSocket.onerror = error => {
+        console.log('WebSocket Error ', error);
+    };
+
+    // Listen for connection close
+    webSocket.onclose = e => {
+        console.log('WebSocket connection closed: ', e);
+    };
+}
 
 export const Home: React.FC = () => {
     const { orientation, setMessages } = useContext<AppContextType>(AppContext);
 
-    useEffect(() => {
-        bleInit(setMessages);
-    }, []);
+    // useEffect(() => {
+    //     bleInit(setMessages);
+    // }, []);
 
     const flexOrientation = useMemo<ViewStyle>(() => {
         return orientation.includes('PORTRAIT') ? flexCol : flexRow;
@@ -44,11 +70,7 @@ export const Home: React.FC = () => {
                     >
                         tmp
                     </MaterialIcons.Button>
-                    <MaterialIcons.Button
-                        name="bar-chart"
-                        onPress={() => {}}
-                        style={styles.chartOption}
-                    >
+                    <MaterialIcons.Button name="bar-chart" onPress={() => {}} style={styles.chartOption}>
                         <View
                             style={{
                                 flexDirection: 'column',
@@ -62,11 +84,7 @@ export const Home: React.FC = () => {
                             </Text>
                         </View>
                     </MaterialIcons.Button>
-                    <Entypo.Button
-                        name="line-graph"
-                        onPress={() => {}}
-                        style={styles.chartOption}
-                    >
+                    <Entypo.Button name="line-graph" onPress={() => {}} style={styles.chartOption}>
                         <Text>1x</Text>
                     </Entypo.Button>
                     <Pressable onPress={() => {}} style={styles.chartOption}>
@@ -74,6 +92,12 @@ export const Home: React.FC = () => {
                     </Pressable>
                     <Pressable onPress={() => {}} style={styles.chartOption}>
                         <Text>E</Text>
+                    </Pressable>
+                    <Pressable
+                        onPress={() => connectToWebSocket()}
+                        style={[styles.chartOption, { backgroundColor: 'blue' }]}
+                    >
+                        <Text>Connect</Text>
                     </Pressable>
                 </View>
             </View>

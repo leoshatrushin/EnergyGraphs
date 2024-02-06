@@ -36,9 +36,9 @@ async function requestBluetoothPermission() {
 
             return (
                 result['android.permission.BLUETOOTH_CONNECT'] ===
-                    PermissionsAndroid.RESULTS.GRANTED &&
+                PermissionsAndroid.RESULTS.GRANTED &&
                 result['android.permission.BLUETOOTH_SCAN'] ===
-                    PermissionsAndroid.RESULTS.GRANTED
+                PermissionsAndroid.RESULTS.GRANTED
             );
         }
     }
@@ -72,6 +72,10 @@ function scanAndConnect(setMessages: any) {
     }, 10000);
 }
 
+const bufferSize = 4 * 3600;
+let currentBufferSize = 0;
+export const messageBuffer = Buffer.alloc(bufferSize);
+
 function connectDevice(device: Device, setMessages: any) {
     console.log('connecting device');
     device
@@ -82,7 +86,7 @@ function connectDevice(device: Device, setMessages: any) {
         .then((device) => {
             console.log('connection successful');
             //  Set what to do when DC is detected
-            BLTManager.onDeviceDisconnected(device.id, (error, device) => {});
+            BLTManager.onDeviceDisconnected(device.id, (error, device) => { });
 
             //Message
             device.monitorCharacteristicForService(
@@ -90,25 +94,32 @@ function connectDevice(device: Device, setMessages: any) {
                 MESSAGE_UUID,
                 (error, characteristic) => {
                     if (characteristic?.value != null) {
-                        const message = Buffer.from(
+                        const newMessageBuffer = Buffer.from(
                             characteristic.value,
                             'base64',
-                        ).readInt32LE(0);
+                        );
+                        const message = newMessageBuffer.readInt32LE(0);
+                        Buffer.concat([messageBuffer, messageBuffer]);
+                        currentBufferSize += 4;
+                        if (currentBufferSize == bufferSize) {
+                            currentBufferSize = 0;
+                        }
 
-                        setMessages((messages: any) => {
-                            let endTime = messages[messages.length - 1];
-                            let startTime = endTime - 60000;
-                            for (let i = 0; i < messages.length - 1; i++) {
-                                if (
-                                    messages[i] < startTime &&
-                                    messages[i + 1] > startTime
-                                ) {
-                                    messages.slice(i);
-                                    break;
-                                }
-                            }
-                            return [...messages, message];
-                        });
+                        // setMessages((messages: any) => {
+                        //     let endTime = messages[messages.length - 1];
+                        //     let startTime = endTime - 60000;
+                        //     for (let i = 0; i < messages.length - 1; i++) {
+                        //         if (
+                        //             messages[i] < startTime &&
+                        //             messages[i + 1] > startTime
+                        //         ) {
+                        //             return messages;
+                        //             messages.slice(i);
+                        //             break;
+                        //         }
+                        //     }
+                        //     return [...messages, message];
+                        // });
                     }
                 },
             );

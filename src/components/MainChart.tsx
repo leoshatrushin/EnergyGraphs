@@ -1,78 +1,117 @@
-import React, { useContext } from 'react';
-import { LineChart } from 'react-native-charts-wrapper';
+import React, {
+    useCallback,
+    useContext,
+    useState,
+    useRef,
+    useEffect,
+} from 'react';
+import {
+    BarChart,
+    ChartChangeEvent,
+    LineChart,
+} from 'react-native-charts-wrapper';
 import { AppContext } from '../App.provider';
-import { processColor } from 'react-native';
+import { LayoutChangeEvent, processColor, Text, View } from 'react-native';
+import ChartStateManager from '../services/LineChartStateManager';
 
-const CHANGE_ENERGY_VALUE = (1 * 3600 * 1000) / 2;
-
-function convertMessagesToGradientPoints(
-    messages: number[],
-): { x: number; y: number }[] {
-    if (messages.length < 2) {
-        return [];
-    }
-    let points = new Array(messages.length - 1);
-    let gradient;
-    let endTime = messages[messages.length - 2];
-    let startTime = endTime - 60000;
-    for (let i = 1; i < messages.length; i++) {
-        gradient = CHANGE_ENERGY_VALUE / (messages[i] - messages[i - 1]);
-        points[i - 1] = {
-            x: (messages[i - 1] - startTime) / 1000,
-            y: gradient,
-        };
-    }
-    return points;
-}
+type LineChartData = {
+    x: number;
+    y: number;
+}[];
 
 export const MainChart: React.FC = () => {
-    const appContext = useContext(AppContext);
-    const { messages } = appContext;
+    // const chart = useRef<LineChart>(null);
+    // const [points, setPoints] = useState<LineChartData>([]);
+    // const [stateManager, setStateManager] =
+    //     useState<ChartStateManager | null>(null);
+    // useEffect(() => {
+    //     if (chart) {
+    //         const stateManager = new ChartStateManager(chart);
+    //         setStateManager(stateManager);
+    //         setPoints(stateManager.loadData(50000, 80000, 0));
+    //     }
+    // }, [chart]);
 
     return (
-        <LineChart
+        <BarChart
             style={{ flex: 1 }}
-            data={{
-                dataSets: [
-                    {
-                        label: 'demo',
-                        values: convertMessagesToGradientPoints(messages),
-                        config: {
-                            color: processColor('cyan'),
-                            mode: 'STEPPED',
-                            drawCircles: false,
-                            drawValues: false,
-                            fillColor: processColor('cyan'),
-                            fillAlpha: 0xa0,
-                            drawFilled: true,
-                        },
-                    },
-                ],
-            }}
             legend={{
                 enabled: false,
             }}
-            yAxis={{
-                left: {
-                    axisMinimum: 0,
-                    axisMaximum: 8000,
-                    textColor: processColor('white'),
-                },
-                right: {
-                    axisMinimum: 0,
-                    axisMaximum: 8000,
-                    textColor: processColor('white'),
+            data={{
+                dataSets: [
+                    {
+                        values: [
+                            { x: 0, y: 100 },
+                            { x: 1, y: 200 },
+                            { x: 3, y: 100 },
+                            { x: 5, y: 200 },
+                            { x: 6, y: 300 },
+                        ],
+                        label: 'Bar dataSet',
+                        config: {
+                            color: processColor('blue'),
+                        },
+                    },
+                ],
+                config: {
+                    barWidth: 0.7,
                 },
             }}
             xAxis={{
-                axisMinimum: 0,
-                axisMaximum: 60,
+                valueFormatter: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                enabled: true,
                 textColor: processColor('white'),
-                position: 'BOTTOM',
-            }}
-            chartDescription={{
-                text: '',
             }}
         />
     );
 };
+// <LineChart
+//     style={{ flex: 1 }}
+//     ref={chart}
+//     data={{
+//         dataSets: [
+//             {
+//                 label: 'Dataset 1',
+//                 values: points,
+//                 config: {
+//                     color: processColor('cyan'),
+//                     mode: 'STEPPED',
+//                     drawCircles: false,
+//                     drawValues: false,
+//                     fillColor: processColor('cyan'),
+//                     fillAlpha: 0xa0,
+//                     drawFilled: true,
+//                 },
+//             },
+//         ],
+//     }}
+//     legend={{
+//         enabled: false,
+//     }}
+//     yAxis={{
+//         left: {
+//             textColor: processColor('white'),
+//         },
+//         // 28.0109 C/Kwh
+//         right: {
+//             textColor: processColor('white'),
+//         },
+//     }}
+//     xAxis={{
+//         textColor: processColor('white'),
+//         position: 'BOTTOM',
+//     }}
+//     chartDescription={{
+//         text: '',
+//     }}
+//     zoom={{
+//         xValue: 65,
+//         yValue: 0,
+//         scaleX: 3,
+//         scaleY: 1,
+//     }}
+//     dragEnabled={false}
+//     scaleEnabled={false}
+//     onChange={stateManager?.handleChange}
+// />
